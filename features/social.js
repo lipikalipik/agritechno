@@ -30,7 +30,7 @@ const userCardTemplate = document.getElementById('user-card-template');
 // Check authentication status
 document.addEventListener('DOMContentLoaded', () => {
     const storedUser = JSON.parse(localStorage.getItem('currentUser'));
-    
+
     if (storedUser) {
         // User is logged in
         currentUser = storedUser;
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         profileDropdown.style.display = 'block';
         loginMessage.style.display = 'none';
         socialContainer.style.display = 'grid';
-        
+
         // Update profile information
         updateProfileInfo();
 
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Update profile information
 function updateProfileInfo() {
     const profileData = JSON.parse(localStorage.getItem(`profile_${currentUser.email}`) || '{}');
-    
+
     // Update navbar profile
     profileName.textContent = currentUser.name;
     if (profileData.photoUrl) {
@@ -264,9 +264,9 @@ function setupEventListeners() {
 // Handle search
 function handleSearch() {
     const query = searchInput.value.trim().toLowerCase();
-    
+
     if (query) {
-        const results = users.filter(user => 
+        const results = users.filter(user =>
             user.name.toLowerCase().includes(query) ||
             user.location.toLowerCase().includes(query) ||
             user.expertise?.toLowerCase().includes(query)
@@ -282,25 +282,25 @@ function handleSearch() {
 // Display search results
 function displaySearchResults(results) {
     searchSuggestions.innerHTML = '';
-    
+
     results.forEach(user => {
         const clone = userCardTemplate.content.cloneNode(true);
-        
+
         const avatar = clone.querySelector('.user-avatar');
         avatar.src = user.photoUrl || '../assets/default-avatar.svg';
-        
+
         clone.querySelector('.user-name').textContent = user.name;
         clone.querySelector('.user-location').textContent = user.location;
-        
+
         const followBtn = clone.querySelector('.follow-btn');
         const isFollowing = user.followers.includes(currentUser.id);
         if (isFollowing) {
             followBtn.textContent = 'Following';
             followBtn.classList.add('following');
         }
-        
+
         followBtn.addEventListener('click', () => toggleFollow(user.id));
-        
+
         searchSuggestions.appendChild(clone);
     });
 }
@@ -322,7 +322,7 @@ function createPost(text, imageUrl = null) {
 
     // Save posts to localStorage
     savePostsToLocalStorage();
-    
+
     // Update display
     displayPosts();
     updateProfileInfo();
@@ -332,7 +332,7 @@ function createPost(text, imageUrl = null) {
 // Display posts
 function displayPosts() {
     postsFeed.innerHTML = '';
-    
+
     if (posts.length === 0) {
         postsFeed.innerHTML = `
             <div class="no-posts">
@@ -343,38 +343,38 @@ function displayPosts() {
         `;
         return;
     }
-    
+
     posts.forEach(post => {
         const user = users.find(u => u.id === post.userId) || currentUser;
         const clone = postTemplate.content.cloneNode(true);
-        
+
         const avatar = clone.querySelector('.post-avatar');
         avatar.src = user.photoUrl || '../assets/default-avatar.svg';
-        
+
         clone.querySelector('.post-author').textContent = user.name;
         clone.querySelector('.post-time').textContent = formatTime(post.timestamp);
         clone.querySelector('.post-text').textContent = post.text;
-        
+
         const postImage = clone.querySelector('.post-image');
         if (post.image) {
             postImage.src = post.image;
             postImage.style.display = 'block';
         }
-        
+
         const likeBtn = clone.querySelector('.like-btn');
         const likesCount = clone.querySelector('.likes-count');
         likesCount.textContent = post.likes.length;
-        
+
         if (post.likes.includes(currentUser.id)) {
             likeBtn.querySelector('i').classList.remove('far');
             likeBtn.querySelector('i').classList.add('fas');
             likeBtn.classList.add('active');
         }
-        
+
         likeBtn.addEventListener('click', () => toggleLike(post.id));
-        
+
         clone.querySelector('.comments-count').textContent = post.comments.length;
-        
+
         const commentsSection = clone.querySelector('.post-comments');
         post.comments.forEach(comment => {
             const commentUser = users.find(u => u.id === comment.userId) || currentUser;
@@ -389,10 +389,10 @@ function displayPosts() {
             `;
             commentsSection.appendChild(commentElement);
         });
-        
+
         const commentInput = clone.querySelector('.add-comment input');
         const sendComment = clone.querySelector('.send-comment');
-        
+
         sendComment.addEventListener('click', () => {
             const text = commentInput.value.trim();
             if (text) {
@@ -413,7 +413,7 @@ function displayPosts() {
         } else {
             clone.querySelector('.post-menu-btn').style.display = 'none';
         }
-        
+
         postsFeed.appendChild(clone);
     });
 }
@@ -422,7 +422,7 @@ function displayPosts() {
 function handleImageUpload(e) {
     const preview = document.querySelector('.image-preview');
     preview.innerHTML = '';
-    
+
     Array.from(e.target.files).forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -438,13 +438,13 @@ function handleImageUpload(e) {
 function toggleLike(postId) {
     const post = posts.find(p => p.id === postId);
     const index = post.likes.indexOf(currentUser.id);
-    
+
     if (index === -1) {
         post.likes.push(currentUser.id);
     } else {
         post.likes.splice(index, 1);
     }
-    
+
     displayPosts();
 }
 
@@ -456,23 +456,40 @@ function addComment(postId, text) {
         text,
         timestamp: new Date()
     });
-    
+
     displayPosts();
 }
 
 // Toggle follow
 function toggleFollow(userId) {
     const user = users.find(u => u.id === userId);
-    const index = user.followers.indexOf(currentUser.id);
-    
-    if (index === -1) {
-        user.followers.push(currentUser.id);
-        currentUser.following.push(userId);
-    } else {
-        user.followers.splice(index, 1);
-        currentUser.following.splice(currentUser.following.indexOf(userId), 1);
+    const profileData = JSON.parse(localStorage.getItem(`profile_${currentUser.email}`) || '{}');
+
+    // Initialize following array if it doesn't exist
+    if (!profileData.following) {
+        profileData.following = [];
     }
-    
+
+    const index = user.followers.indexOf(currentUser.id);
+    const followingIndex = profileData.following.indexOf(userId);
+
+    if (index === -1) {
+        // Follow user
+        user.followers.push(currentUser.id);
+        profileData.following.push(userId);
+    } else {
+        // Unfollow user
+        user.followers.splice(index, 1);
+        profileData.following.splice(followingIndex, 1);
+    }
+
+    // Save updated profile data to localStorage
+    localStorage.setItem(`profile_${currentUser.email}`, JSON.stringify(profileData));
+
+    // Update the currentUser object
+    currentUser.following = profileData.following;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
     updateProfileInfo();
     displaySearchResults(users);
     showToast(index === -1 ? 'Started following user' : 'Unfollowed user');
@@ -482,19 +499,19 @@ function toggleFollow(userId) {
 function updateOnlineUsers() {
     onlineUsers.innerHTML = '';
     onlineCount.textContent = `${onlineUsersList.length} Online`;
-    
+
     onlineUsersList.forEach(user => {
         const clone = userCardTemplate.content.cloneNode(true);
-        
+
         const avatar = clone.querySelector('.user-avatar');
         avatar.src = user.photoUrl || '../assets/default-avatar.svg';
-        
+
         clone.querySelector('.user-name').textContent = user.name;
         clone.querySelector('.user-location').textContent = user.location;
-        
+
         const card = clone.querySelector('.user-card');
         card.addEventListener('click', () => startChat(user));
-        
+
         onlineUsers.appendChild(clone);
     });
 }
@@ -503,15 +520,15 @@ function updateOnlineUsers() {
 function startChat(user) {
     currentChat = user;
     document.querySelector('.online-users').style.display = 'none';
-    
+
     const chatContainer = document.querySelector('.chat-container');
     chatContainer.style.display = 'flex';
-    
+
     const avatar = chatContainer.querySelector('.chat-avatar');
     avatar.src = user.photoUrl || '../assets/default-avatar.svg';
-    
+
     chatContainer.querySelector('.chat-user-name').textContent = user.name;
-    
+
     const messages = document.querySelector('.chat-messages');
     messages.innerHTML = `
         <div class="message-info">
@@ -551,11 +568,11 @@ function showProfileModal(user) {
     const avatar = modal.querySelector('.large-avatar');
     const name = modal.querySelector('.profile-name');
     const bio = modal.querySelector('.profile-bio');
-    
+
     avatar.src = user.photoUrl || '../assets/default-avatar.svg';
     name.textContent = user.name;
     bio.textContent = user.bio || 'No bio available';
-    
+
     showModal(modal);
 }
 
@@ -564,19 +581,19 @@ function showEditProfileModal() {
     const modal = document.getElementById('edit-profile-modal');
     const form = document.getElementById('edit-profile-form');
     const profileData = JSON.parse(localStorage.getItem(`profile_${currentUser.email}`) || '{}');
-    
+
     form.elements['edit-name'].value = currentUser.name;
     form.elements['edit-location'].value = profileData.location || '';
     form.elements['edit-bio'].value = profileData.bio || '';
     form.elements['edit-expertise'].value = profileData.expertise || '';
-    
+
     showModal(modal);
 }
 
 // Handle edit profile
 function handleEditProfile(e) {
     e.preventDefault();
-    
+
     const form = e.target;
     const profileData = {
         name: form.elements['edit-name'].value,
@@ -584,14 +601,14 @@ function handleEditProfile(e) {
         bio: form.elements['edit-bio'].value,
         expertise: form.elements['edit-expertise'].value
     };
-    
+
     // Update current user
     currentUser.name = profileData.name;
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    
+
     // Update profile data
     localStorage.setItem(`profile_${currentUser.email}`, JSON.stringify(profileData));
-    
+
     updateProfileInfo();
     hideModal(document.getElementById('edit-profile-modal'));
     showToast('Profile updated successfully');
@@ -632,7 +649,7 @@ function showToast(message) {
 function formatTime(date) {
     const now = new Date();
     const diff = now - date;
-    
+
     if (diff < 60000) {
         return 'Just now';
     } else if (diff < 3600000) {

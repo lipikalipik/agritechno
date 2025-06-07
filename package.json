@@ -1,0 +1,16 @@
+{
+    "name": "agriconnect",
+    "version": "1.0.0",
+    "description": "AgriConnect - A platform connecting farmers with modern agricultural tools and services",
+    "scripts": {
+        "start": "serve .",
+        "build": "mkdir -p dist && cp -r assets features home.* login.* profile.* *.css dist/",
+        "deploy": "gh-pages -d dist"
+    },
+    "dependencies": {
+        "serve": "^14.2.0"
+    },
+    "devDependencies": {
+        "gh-pages": "^5.0.0"
+    }
+}

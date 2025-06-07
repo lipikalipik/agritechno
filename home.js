@@ -35,7 +35,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-links a');
-    
+
     let current = '';
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
@@ -57,13 +57,13 @@ window.addEventListener('scroll', () => {
 document.documentElement.style.setProperty(
     '--scroll-padding',
     document.querySelector('.navbar').offsetHeight + 'px'
-); 
+);
 
 
-  fetch('navbar.html')
+fetch('navbar.html')
     .then(response => response.text())
     .then(data => {
-      document.getElementById('navbar-placeholder').innerHTML = data;
+        document.getElementById('navbar-placeholder').innerHTML = data;
     });
 
 // Login button click handler
@@ -82,7 +82,8 @@ if (ctaButton) {
 document.querySelector('.logout-btn').addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.removeItem('currentUser');
-    updateHomePageUI();
+    localStorage.removeItem('token');
+    window.location.href = 'home.html';
 });
 
 // Profile dropdown toggle
@@ -97,8 +98,8 @@ if (profileTrigger) {
 
 // Close dropdown when clicking outside
 document.addEventListener('click', (e) => {
-    if (!profileTrigger?.contains(e.target)) {
-        dropdownContent.style.display = 'none';
+    if (!e.target.closest('.profile-dropdown')) {
+        document.querySelector('.dropdown-content').style.display = 'none';
     }
 });
 
@@ -108,16 +109,55 @@ const updateHomePageUI = () => {
     const loginBtn = document.getElementById('nav-login-btn');
     const profileDropdown = document.querySelector('.profile-dropdown');
     const profileName = document.querySelector('.profile-name');
+    const profileIcon = document.querySelector('.profile-icon i');
     const ctaButton = document.querySelector('.cta-button');
 
     if (currentUser) {
+        // User is logged in
         loginBtn.style.display = 'none';
-        profileDropdown.style.display = 'block';
+        profileDropdown.style.display = 'flex';
+
+        // Set user's name
         profileName.textContent = currentUser.name;
+
+        // Set profile icon with user's initial
+        const userInitial = currentUser.name.charAt(0).toUpperCase();
+        profileIcon.className = ''; // Remove existing icon class
+        profileIcon.textContent = userInitial;
+
         if (ctaButton) {
             ctaButton.style.display = 'none';
         }
+
+        // Handle logout
+        document.querySelector('.logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            // Clear user data
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('token');
+            // Redirect to home page
+            window.location.href = 'home.html';
+        });
+
+        // Handle dropdown on mobile
+        if (window.innerWidth <= 768) {
+            const profileTrigger = document.querySelector('.profile-trigger');
+            const dropdownContent = document.querySelector('.dropdown-content');
+
+            profileTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!profileDropdown.contains(e.target)) {
+                    dropdownContent.style.display = 'none';
+                }
+            });
+        }
     } else {
+        // User is not logged in
         loginBtn.style.display = 'block';
         profileDropdown.style.display = 'none';
         if (ctaButton) {
@@ -128,3 +168,12 @@ const updateHomePageUI = () => {
 
 // Call updateHomePageUI when the page loads
 document.addEventListener('DOMContentLoaded', updateHomePageUI);
+
+// Update UI on window resize
+window.addEventListener('resize', () => {
+    const dropdownContent = document.querySelector('.dropdown-content');
+    if (dropdownContent) {
+        dropdownContent.style.display = 'none';
+    }
+    updateHomePageUI();
+});

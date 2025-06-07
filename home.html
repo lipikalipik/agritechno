@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,11 @@
     <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-   
-     <!-- Navbar -->
-     <nav class="navbar">
+
+    <!-- Navbar -->
+    <nav class="navbar">
         <div class="logo">
             <img src="assets/logo.svg" alt="Logo">
             <span>AgriConnect</span>
@@ -22,19 +24,24 @@
         </div>
         <div class="auth-buttons">
             <button class="login-btn" id="nav-login-btn">Login</button>
-            <!-- Profile Dropdown (Hidden by default) -->
             <div class="profile-dropdown" style="display: none;">
                 <div class="profile-trigger">
-                    <img src="assets/default-avatar.svg" alt="Profile" class="profile-image">
+                    <div class="profile-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
                     <span class="profile-name">User</span>
+                    <i class="fas fa-chevron-down"></i>
                 </div>
-    
                 <div class="dropdown-content">
-                        <a href="profile.html" class="dropdown-item">
-                            <i class="fas fa-user"></i>
-                            My Profile
-                        </a>
-                        
+                    <a href="profile.html" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i>
+                        View Profile
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                    <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item logout-btn">
                         <i class="fas fa-sign-out-alt"></i>
                         Logout
@@ -70,47 +77,54 @@
         <div class="services-grid">
             <div class="service-card">
                 <i class="fas fa-handshake"></i>
-                <button class="service-title" onclick="window.location.href='features/social.html'">AgriConnect Network</button>
+                <button class="service-title" onclick="window.location.href='./features/social.html'">AgriConnect
+                    Network</button>
                 <p>Connect with farmers, experts, and agricultural professionals</p>
             </div>
             <div class="service-card">
                 <i class="fas fa-users"></i>
-                <button class="service-title" onclick="window.location.href='features/labor.html'">Labor Connect</button>
+                <button class="service-title" onclick="window.location.href='./features/labor.html'">Labor
+                    Connect</button>
                 <p>Find and hire agricultural laborers for your farm</p>
             </div>
             <div class="service-card">
                 <i class="fas fa-store"></i>
                 <br>
-                <button class="service-title" onclick="window.location.href='features/products.html'">Products</button>
+                <button class="service-title"
+                    onclick="window.location.href='./features/products.html'">Products</button>
                 <p>Buy and sell agricultural products and equipment</p>
             </div>
             <div class="service-card">
                 <i class="fas fa-cloud-sun"></i>
-                <button class="service-title" onclick="window.location.href='features/weather.html'">Weather Updates</button>
+                <button class="service-title" onclick="window.location.href='./features/weather.html'">Weather
+                    Updates</button>
                 <p>Get real-time weather forecasts and alerts</p>
             </div>
             <div class="service-card">
                 <i class="fas fa-tasks"></i>
-                <button class="service-title" onclick="window.location.href='features/todo.html'">Todo Manager</button>
+                <button class="service-title" onclick="window.location.href='./features/todo.html'">Todo
+                    Manager</button>
                 <p>Organize and track your farming tasks</p>
             </div>
             <div class="service-card">
                 <i class="fas fa-robot"></i>
-                <button class="service-title" onclick="window.location.href='features/chat.html'">AI Chat Assistant</button>
+                <button class="service-title" onclick="window.location.href='./features/chat.html'">AI Chat
+                    Assistant</button>
                 <p>Get instant answers to your farming queries</p>
             </div>
             <div class="service-card">
                 <i class="fas fa-money-bill"></i>
-                <button class="service-title" onclick="window.location.href='features/expense.html'">expense Tracker</button>
+                <button class="service-title" onclick="window.location.href='./features/expense.html'">expense
+                    Tracker</button>
                 <p>Organizing tool that helps you record and analyze your spending</p>
             </div>
             <div class="service-card">
                 <i class="fas fa-newspaper"></i>
                 <br>
-                <button class="service-title" onclick="window.location.href='features/news.html'">Agri News</button>
+                <button class="service-title" onclick="window.location.href='./features/news.html'">Agri News</button>
                 <p>Impressionism is the newspaper of the soul</p>
             </div>
-            
+
         </div>
     </section>
 
@@ -119,8 +133,10 @@
         <h2>About Us</h2>
         <div class="about-content">
             <div class="about-text">
-                <p>AgriConnect is your one-stop solution for modern farming needs. We bridge the gap between traditional farming and modern technology, making agriculture more efficient and sustainable.</p>
-                <p>Our platform provides innovative tools and services to help farmers maximize their productivity while building a strong community of agricultural professionals.</p>
+                <p>AgriConnect is your one-stop solution for modern farming needs. We bridge the gap between traditional
+                    farming and modern technology, making agriculture more efficient and sustainable.</p>
+                <p>Our platform provides innovative tools and services to help farmers maximize their productivity while
+                    building a strong community of agricultural professionals.</p>
             </div>
             <div class="about-stats">
                 <div class="stat">
@@ -164,6 +180,7 @@
 
     <!-- Scripts -->
     <script src="home.js"></script>
-  
+
 </body>
-</html> 
+
+</html>

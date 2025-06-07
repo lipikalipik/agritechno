@@ -1,3 +1,5 @@
+import api from './services/api.js';
+
 // DOM Elements
 const loginSection = document.querySelector('.login-section');
 const signupSection = document.querySelector('.signup-section');
@@ -5,6 +7,10 @@ const forgotSection = document.querySelector('.forgot-section');
 const loginForm = document.getElementById('loginForm');
 const signupForm = document.getElementById('signupForm');
 const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+const loginTab = document.getElementById('login-tab');
+const signupTab = document.getElementById('signup-tab');
+const errorMessage = document.querySelector('.error-message');
+const loadingSpinner = document.querySelector('.loading-spinner');
 
 // Form switching
 document.getElementById('showSignup').addEventListener('click', (e) => {
@@ -12,6 +18,7 @@ document.getElementById('showSignup').addEventListener('click', (e) => {
     loginSection.classList.remove('show');
     signupSection.classList.add('show');
     forgotSection.classList.remove('show');
+    errorMessage.style.display = 'none';
 });
 
 document.getElementById('showLogin').addEventListener('click', (e) => {
@@ -19,6 +26,7 @@ document.getElementById('showLogin').addEventListener('click', (e) => {
     loginSection.classList.add('show');
     signupSection.classList.remove('show');
     forgotSection.classList.remove('show');
+    errorMessage.style.display = 'none';
 });
 
 document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
@@ -26,6 +34,7 @@ document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
     loginSection.classList.remove('show');
     signupSection.classList.remove('show');
     forgotSection.classList.add('show');
+    errorMessage.style.display = 'none';
 });
 
 document.getElementById('backToLogin').addEventListener('click', (e) => {
@@ -33,66 +42,121 @@ document.getElementById('backToLogin').addEventListener('click', (e) => {
     loginSection.classList.add('show');
     signupSection.classList.remove('show');
     forgotSection.classList.remove('show');
+    errorMessage.style.display = 'none';
 });
+
+// Show loading spinner
+const showLoading = () => {
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+    }
+};
+
+// Hide loading spinner
+const hideLoading = () => {
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+    }
+};
+
+// Show error message
+const showError = (message) => {
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
+    setTimeout(() => {
+        errorMessage.style.display = 'none';
+    }, 3000);
+};
+
+// Validate email format
+const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+// Validate password strength
+const isValidPassword = (password) => {
+    return password.length >= 6;
+};
 
 // Form submission handling
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = loginForm.querySelector('input[type="email"]').value;
+    const email = loginForm.querySelector('input[type="email"]').value.trim();
     const password = loginForm.querySelector('input[type="password"]').value;
 
-    try {
-        // Here you would typically make an API call to your backend
-        // For demo purposes, we'll use localStorage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const user = users.find(u => u.email === email && u.password === password);
+    if (!email || !password) {
+        showError('Please fill in all fields');
+        return;
+    }
 
-        if (user) {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            window.location.href = 'home.html';
-        } else {
-            alert('Invalid email or password');
-        }
+    if (!isValidEmail(email)) {
+        showError('Please enter a valid email address');
+        return;
+    }
+
+    try {
+        showLoading();
+        await api.login(email, password);
+        window.location.href = 'home.html';
     } catch (error) {
-        console.error('Login error:', error);
-        alert('An error occurred during login');
+        showError(error.message);
+    } finally {
+        hideLoading();
     }
 });
 
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = signupForm.querySelector('input[type="text"]').value;
-    const email = signupForm.querySelector('input[type="email"]').value;
+    const name = signupForm.querySelector('input[type="text"]').value.trim();
+    const email = signupForm.querySelector('input[type="email"]').value.trim();
     const password = signupForm.querySelectorAll('input[type="password"]')[0].value;
     const confirmPassword = signupForm.querySelectorAll('input[type="password"]')[1].value;
 
+    // Validation
+    if (!name || !email || !password || !confirmPassword) {
+        showError('Please fill in all fields');
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showError('Please enter a valid email address');
+        return;
+    }
+
+    if (!isValidPassword(password)) {
+        showError('Password must be at least 6 characters long');
+        return;
+    }
+
     if (password !== confirmPassword) {
-        alert('Passwords do not match');
+        showError('Passwords do not match');
         return;
     }
 
     try {
-        // For demo purposes, using localStorage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        if (users.some(u => u.email === email)) {
-            alert('Email already exists');
-            return;
-        }
-
-        const newUser = { name, email, password };
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
+        showLoading();
+        await api.signup(name, email, password);
         window.location.href = 'home.html';
     } catch (error) {
-        console.error('Signup error:', error);
-        alert('An error occurred during signup');
+        showError(error.message);
+    } finally {
+        hideLoading();
     }
 });
 
 forgotPasswordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = forgotPasswordForm.querySelector('input[type="email"]').value;
+    const email = forgotPasswordForm.querySelector('input[type="email"]').value.trim();
+
+    if (!email) {
+        showError('Please enter your email address');
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showError('Please enter a valid email address');
+        return;
+    }
 
     // For demo purposes, just show an alert
     alert('Password reset link has been sent to your email');
@@ -122,4 +186,21 @@ const updateHomePageUI = () => {
         loginBtn.style.display = 'block';
         profileDropdown.style.display = 'none';
     }
-}; 
+};
+
+// Tab switching
+loginTab.addEventListener('click', () => {
+    loginTab.classList.add('active');
+    signupTab.classList.remove('active');
+    loginSection.style.display = 'block';
+    signupSection.style.display = 'none';
+    errorMessage.style.display = 'none';
+});
+
+signupTab.addEventListener('click', () => {
+    signupTab.classList.add('active');
+    loginTab.classList.remove('active');
+    signupSection.style.display = 'block';
+    loginSection.style.display = 'none';
+    errorMessage.style.display = 'none';
+}); 

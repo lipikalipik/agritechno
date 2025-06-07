@@ -1,90 +1,48 @@
 # AgriConnect
 
-AgriConnect is a modern e-commerce platform connecting farmers with agricultural solutions. The platform enables users to buy and sell agricultural products and equipment while fostering a community of agricultural professionals.
+AgriConnect is a comprehensive web platform designed to connect and empower farmers with modern agricultural tools and services. The platform includes features for weather forecasting, crop management, and agricultural community networking.
 
 ## Features
 
-- User Authentication (Login/Register)
-- Product Marketplace
-- Search and Filter Products
-- Product Management (CRUD operations)
+- User Authentication System
+- Weather Forecast System for Farmers
+- Profile Management
 - Responsive Design
-- Modern UI/UX
+- Modern UI/UX with earth-tone theme
 
 ## Tech Stack
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- JWT Authentication
+- Frontend: HTML5, CSS3, JavaScript
+- Backend: Node.js
+- Weather Data: OpenWeatherMap API
 
-### Frontend
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- RESTful API Integration
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v14 or higher)
-- MongoDB
-
-### Installation
+## Setup
 
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/agriconnect.git
+```
+
+2. Navigate to the project directory:
+```bash
 cd agriconnect
 ```
 
-2. Install backend dependencies:
+3. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Install frontend dependencies:
-```bash
-cd frontend
-npm install
+4. Set up environment variables:
+- Create a `.env` file in the root directory
+- Add your OpenWeatherMap API key:
+```
+OPENWEATHER_API_KEY=your_api_key_here
 ```
 
-4. Create a `.env` file in the root directory and add your configuration:
-```env
-PORT=3000
-MONGODB_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-```
-
-5. Start the backend server:
+5. Start the development server:
 ```bash
 npm start
-```
-
-6. Start the frontend (in a new terminal):
-```bash
-cd frontend
-npm start
-```
-
-## Project Structure
-
-```
-agriconnect/
-├── backend/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   └── server.js
-├── frontend/
-│   ├── assets/
-│   ├── css/
-│   ├── js/
-│   ├── features/
-│   └── services/
-└── README.md
 ```
 
 ## Contributing
@@ -97,9 +55,4 @@ agriconnect/
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to all contributors who have helped shape AgriConnect
-- Special thanks to the farming community for their input and support 
+This project is licensed under the MIT License - see the LICENSE file for details. 

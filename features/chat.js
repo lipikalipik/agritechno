@@ -24,14 +24,14 @@ const profileImage = document.getElementById('nav-profile-image');
 // Check login status and initialize
 document.addEventListener('DOMContentLoaded', () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
+
     if (currentUser) {
         // User is logged in
         loginBtn.style.display = 'none';
         profileDropdown.style.display = 'block';
         profileName.textContent = currentUser.name;
         chatContainer.style.display = 'block';
-        
+
         // Load profile photo if exists
         const profileData = JSON.parse(localStorage.getItem(`profile_${currentUser.email}`) || '{}');
         if (profileData.photoUrl) {
@@ -57,7 +57,7 @@ document.querySelector('.logout-btn').addEventListener('click', (e) => {
 function loadChatHistory() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const chatHistory = JSON.parse(localStorage.getItem(`chat_history_${currentUser.email}`)) || [];
-    
+
     chatHistory.forEach(message => {
         appendMessage(message.type, message.content);
     });
@@ -70,7 +70,7 @@ function saveChatHistory() {
         type: msg.classList.contains('user-message') ? 'user' : 'ai',
         content: msg.querySelector('.message-content p').innerHTML
     }));
-    
+
     localStorage.setItem(`chat_history_${currentUser.email}`, JSON.stringify(messages));
 }
 
@@ -87,10 +87,10 @@ function getTimestamp() {
 function formatMessage(content) {
     // Convert markdown to HTML
     let formattedContent = md.render(content);
-    
+
     // Replace ** with proper styling
     formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
+
     return formattedContent;
 }
 
@@ -98,16 +98,16 @@ function formatMessage(content) {
 function appendMessage(type, content) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}-message`;
-    
+
     const icon = type === 'user' ? 'fa-user' : 'fa-robot';
-    
+
     messageDiv.innerHTML = `
         <i class="fas ${icon}"></i>
         <div class="message-content">
             <p>${formatMessage(content)}</p>
         </div>
     `;
-    
+
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     saveChatHistory();
@@ -205,7 +205,7 @@ clearButton.addEventListener('click', () => {
         chatMessages.innerHTML = '';
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         localStorage.removeItem(`chat_history_${currentUser.email}`);
-        
+
         // Add welcome message back
         appendMessage('ai', 'Hello! I\'m your AgriConnect AI assistant. How can I help you with farming today?');
     }

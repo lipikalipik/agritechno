@@ -561,7 +561,7 @@ function viewOrders() {
 // Render orders list
 function renderOrders(ordersList) {
     return ordersList.map(order => `
-        <div class="order-card">
+        <div class="order-card ${order.status.toLowerCase()}">
             <div class="order-header">
                 <div class="order-info">
                     <p class="order-id">Order #${order.id}</p>
@@ -587,7 +587,10 @@ function renderOrders(ordersList) {
             <div class="order-footer">
                 <div class="delivery-details">
                     ${order.status === 'Pending' ?
-            `<p>Expected Delivery: ${formatDate(new Date(order.estimatedDelivery))}</p>` :
+            `<p>Expected Delivery: ${formatDate(new Date(order.estimatedDelivery))}</p>
+                         <p class="countdown" data-delivery="${order.estimatedDelivery}">
+                            ${getDeliveryCountdown(new Date(order.estimatedDelivery))}
+                         </p>` :
             `<p>Delivered on: ${formatDate(new Date(order.actualDeliveryDate))}</p>`
         }
                 </div>
@@ -605,6 +608,39 @@ function renderOrders(ordersList) {
         </div>
     `).join('');
 }
+
+// Get delivery countdown
+function getDeliveryCountdown(deliveryDate) {
+    const now = new Date();
+    const diff = deliveryDate - now;
+
+    if (diff <= 0) {
+        return 'Delivery time elapsed';
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    let countdown = '';
+    if (days > 0) countdown += `${days}d `;
+    if (hours > 0) countdown += `${hours}h `;
+    countdown += `${minutes}m`;
+
+    return `Arriving in: ${countdown}`;
+}
+
+// Update countdowns
+function updateCountdowns() {
+    const countdowns = document.querySelectorAll('.countdown');
+    countdowns.forEach(countdown => {
+        const deliveryDate = new Date(countdown.dataset.delivery);
+        countdown.textContent = getDeliveryCountdown(deliveryDate);
+    });
+}
+
+// Start countdown updates
+setInterval(updateCountdowns, 60000); // Update every minute
 
 // Mark order as delivered
 function markAsDelivered(orderId) {
@@ -624,4 +660,24 @@ const navLinks = document.querySelector('.nav-links');
 
 hamburger.addEventListener('click', () => {
     navLinks.classList.toggle('active');
-}); 
+});
+
+// Switch orders tab
+function switchOrdersTab(button, tabName) {
+    // Update tab buttons
+    const tabButtons = document.querySelectorAll('.orders-tabs .tab-btn');
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+
+    // Update tab content
+    const pendingContent = document.getElementById('pending-orders');
+    const deliveredContent = document.getElementById('delivered-orders');
+
+    if (tabName === 'pending') {
+        pendingContent.classList.add('active');
+        deliveredContent.classList.remove('active');
+    } else {
+        pendingContent.classList.remove('active');
+        deliveredContent.classList.add('active');
+    }
+} 
